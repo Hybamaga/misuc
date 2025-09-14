@@ -1,0 +1,70 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <limits>
+
+using namespace std;
+
+// Класс для представления музыкального инструмента
+class MusicalInstrument {
+public:
+    string name;
+    string type;
+    string manufacturer;
+    double price;
+
+    // Метод для записи данных инструмента в файл
+    void writeToFile(ofstream &outFile) const {
+        outFile << name << '\n'
+                << type << '\n'
+                << manufacturer << '\n'
+                << price << "\n\n"; // Двойной перевод строки как разделитель
+    }
+};
+
+int main() {
+    // Открываем файл в режиме добавления (app) для сохранения предыдущих данных
+    ofstream outFile("instruments.txt", ios::app);
+    
+    if (!outFile.is_open()) {
+        cerr << "Ошибка открытия файла!" << endl;
+        return 1;
+    }
+
+    MusicalInstrument instrument;
+    char addMore = 'y';
+
+    // Цикл для добавления инструментов
+    while (addMore == 'y' || addMore == 'Y') {
+        // Ввод данных от пользователя
+        cout << "Введите название инструмента: ";
+        getline(cin, instrument.name);
+
+        cout << "Введите тип инструмента: ";
+        getline(cin, instrument.type);
+
+        cout << "Введите производителя: ";
+        getline(cin, instrument.manufacturer);
+
+        cout << "Введите цену: ";
+        while (!(cin >> instrument.price)) { // Проверка корректности ввода цены
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Некорректный ввод! Введите число для цены: ";
+        }
+        cin.ignore(); // Очистка буфера после ввода числа
+
+        // Запись в файл и подтверждение
+        instrument.writeToFile(outFile);
+        cout << "Инструмент добавлен в файл!" << endl;
+
+        // Запрос на добавление ещё одного инструмента
+        cout << "Добавить ещё инструмент? (y/n): ";
+        cin >> addMore;
+        cin.ignore(); // Очистка буфера после ввода символа
+    }
+
+    outFile.close();
+    cout << "Программа завершена. Данные сохранены в instruments.txt" << endl;
+    return 0;
+}
